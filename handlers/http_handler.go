@@ -48,7 +48,7 @@ func HandleHttp(writer http.ResponseWriter, request *http.Request, redirect stru
 	copyHeader(writer, response.Header)
 
 	writer.WriteHeader(response.StatusCode)
-	// SSE Support: Manual copy with Flush to ensure real-time delivery
+
 	flusher, ok := writer.(http.Flusher)
 	if !ok {
 		io.Copy(writer, response.Body)
