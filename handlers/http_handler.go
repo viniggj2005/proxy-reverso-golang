@@ -48,7 +48,27 @@ func HandleHttp(writer http.ResponseWriter, request *http.Request, redirect stru
 	copyHeader(writer, response.Header)
 
 	writer.WriteHeader(response.StatusCode)
-	io.Copy(writer, response.Body)
+	// SSE Support: Manual copy with Flush to ensure real-time delivery
+	flusher, ok := writer.(http.Flusher)
+	if !ok {
+		io.Copy(writer, response.Body)
+		return
+	}
+
+	buffer := make([]byte, 1024)
+	for {
+		n, err := response.Body.Read(buffer)
+		if n > 0 {
+			writer.Write(buffer[:n])
+			flusher.Flush()
+		}
+		if err != nil {
+			if err != io.EOF {
+				fmt.Println("Erro ao ler resposta:", err)
+			}
+			break
+		}
+	}
 }
 
 func isHipByHop(header string) bool {

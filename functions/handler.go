@@ -23,7 +23,6 @@ func MeuHandler(writer http.ResponseWriter, request *http.Request) {
 			}
 
 			return
-
 		}
 	}
 	render404(writer)
