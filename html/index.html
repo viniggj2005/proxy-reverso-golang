@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Página não encontrada</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 flex items-center justify-center min-h-screen font-sans">
+
+    <div class="text-center px-6">
+        <div class="relative">
+            <h1 class="text-[12rem] font-black text-slate-200 select-none">404</h1>
+            <div class="absolute inset-0 flex items-center justify-center">
+                <span class="text-8xl float-animation">🚀</span>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <h2 class="text-3xl font-bold text-slate-800 md:text-4xl">Ops! Espaço errado.</h2>
+            <p class="mt-4 text-slate-600 max-w-md mx-auto">
+                A página que você está procurando parece ter sido movida para outra galáxia ou nunca existiu.
+            </p>
+        </div>
+
+
+    </div>
+
+</body>
+
+</html>
