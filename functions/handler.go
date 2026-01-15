@@ -11,13 +11,15 @@ import (
 
 func MeuHandler(writer http.ResponseWriter, request *http.Request) {
 	redirects := []structs.Redirects{
-		{Prefix: "/api", Url: "http://localhost:3000"},
+		{Prefix: "/api", Url: "http://localhost:50051"},
 	}
 	for _, redirect := range redirects {
 		if strings.HasPrefix(request.URL.String(), redirect.Prefix) {
 
 			if request.Header.Get("Upgrade") == "websocket" {
 				handlers.HandleWebSocket(writer, request, redirect)
+			} else if request.Header.Get("Content-Type") == "application/grpc" || request.Header.Get("Content-Type") == "application/grpc+proto" {
+				handlers.HandleGrpc(writer, request, redirect)
 			} else {
 				handlers.HandleHttp(writer, request, redirect)
 			}
