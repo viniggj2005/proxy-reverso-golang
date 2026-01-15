@@ -1,17 +1,19 @@
 package handlers
 
 import (
+	"crypto/tls"
 	"fmt"
 	"io"
 	"net"
 	"net/http"
 	"net/url"
+	"proxy-reverso-golang/shared"
 	"proxy-reverso-golang/structs"
 	"strings"
 )
 
 func HandleWebSocket(writer http.ResponseWriter, request *http.Request, redirect structs.Redirects) {
-
+	//para conexão com tls
 	// tls.Dial("tcp", connectionUrl.Host, &tls.Config{InsecureSkipVerify: true})
 	dialConnection, err := connectToBackend(redirect)
 	if err != nil {
@@ -54,12 +56,10 @@ func forwardHanshake(request *http.Request, redirect structs.Redirects, dialConn
 }
 
 func connectToBackend(redirect structs.Redirects) (net.Conn, error) {
-	dialConnection, err := net.Dial("tcp", getHost(redirect))
-	if err != nil {
-		fmt.Println("Erro ao conectar ao servidor:", err)
-		return nil, err
+	if shared.VerifyTlsConnection(redirect.Url) {
+		return tls.Dial("tcp", getHost(redirect), nil)
 	}
-	return dialConnection, nil
+	return net.Dial("tcp", getHost(redirect))
 }
 
 func getHost(redirect structs.Redirects) string {
