@@ -1,6 +1,7 @@
 package functions
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -16,8 +17,9 @@ func ServerInit() {
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
-	err := server.ListenAndServe()
-	if err != nil {
-		println("Error starting server:", err.Error())
+	fmt.Println("\033[32mServer starting on port 8080\033[0m")
+
+	if err := server.ListenAndServe(); err != nil {
+		fmt.Println("\033[31mError starting server:\033[0m", err)
 	}
 }

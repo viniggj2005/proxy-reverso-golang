@@ -64,7 +64,7 @@ func HandleHttp(writer http.ResponseWriter, request *http.Request, redirect stru
 		}
 		if err != nil {
 			if err != io.EOF {
-				fmt.Println("Erro ao ler resposta:", err)
+				fmt.Println("\033[31mErro ao ler resposta:\033[0m", err)
 			}
 			break
 		}
@@ -95,7 +95,7 @@ func prepareProxyRequest(request *http.Request, redirect structs.Redirects) (*ht
 	suffix := strings.TrimPrefix(request.URL.Path, redirect.Prefix)
 	targetUrl, err := url.Parse(redirect.Url)
 	if err != nil {
-		fmt.Println("Erro ao fazer parse da URL:", err)
+		fmt.Println("\033[31mErro ao fazer parse da URL:\033[0m", err)
 		return nil, err
 	}
 	clientIP, _, err := net.SplitHostPort(request.RemoteAddr)

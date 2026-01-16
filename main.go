@@ -1,7 +1,15 @@
 package main
 
-import "proxy-reverso-golang/functions"
+import (
+	"fmt"
+	"proxy-reverso-golang/functions"
+	"proxy-reverso-golang/global"
+)
 
 func main() {
-	functions.ServerInit()
+	functions.GetConfig()
+	for _, proxy := range global.ProxiesConfig.Proxies {
+		fmt.Println(proxy.Prefix)
+	}
+	// functions.ServerInit()
 }

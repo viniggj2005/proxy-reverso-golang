@@ -33,7 +33,7 @@ func MeuHandler(writer http.ResponseWriter, request *http.Request) {
 func render404(writer http.ResponseWriter) {
 	conteudo404, err := os.ReadFile("./html/index.html")
 	if err != nil {
-		fmt.Println("Erro ao ler o arquivo 404:", err)
+		fmt.Println("\033[31m Erro ao ler o arquivo 404:\033[0m", err)
 		return
 	}
 	writer.Header().Set("Content-Type", "text/html; charset=utf-8")

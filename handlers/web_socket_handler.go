@@ -13,23 +13,21 @@ import (
 )
 
 func HandleWebSocket(writer http.ResponseWriter, request *http.Request, redirect structs.Redirects) {
-	//para conexão com tls
-	// tls.Dial("tcp", connectionUrl.Host, &tls.Config{InsecureSkipVerify: true})
 	dialConnection, err := connectToBackend(redirect)
 	if err != nil {
-		fmt.Println("Erro ao conectar ao servidor:", err)
+		fmt.Println("\033[31mErro ao conectar ao servidor:\033[0m", err)
 		return
 	}
 	forwardHanshake(request, redirect, dialConnection)
 
 	hijack, ok := writer.(http.Hijacker)
 	if !ok {
-		fmt.Println("Erro ao conectar ao servidor:", err)
+		fmt.Println("\033[31mErro ao conectar ao servidor:\033[0m", err)
 		return
 	}
 	hijackConnection, _, err := hijack.Hijack()
 	if err != nil {
-		fmt.Println("Erro ao conectar ao servidor:", err)
+		fmt.Println("\033[31mErro ao conectar ao servidor:\033[0m", err)
 		return
 	}
 	tunnel(hijackConnection, dialConnection)
@@ -49,7 +47,7 @@ func forwardHanshake(request *http.Request, redirect structs.Redirects, dialConn
 
 	err := request.Write(dialConnection)
 	if err != nil {
-		fmt.Println("Erro ao conectar ao servidor:", err)
+		fmt.Println("\033[31mErro ao conectar ao servidor:\033[0m", err)
 		return err
 	}
 	return nil
@@ -65,7 +63,7 @@ func connectToBackend(redirect structs.Redirects) (net.Conn, error) {
 func getHost(redirect structs.Redirects) string {
 	connectionUrl, err := url.Parse(redirect.Url)
 	if err != nil {
-		fmt.Println("Erro ao fazer parse da URL:", err)
+		fmt.Println("\033[31mErro ao fazer parse da URL:\033[0m", err)
 		return ""
 	}
 	return connectionUrl.Host
