@@ -9,7 +9,7 @@ import (
 func main() {
 	functions.GetConfig()
 	for _, proxy := range global.ProxiesConfig.Proxies {
-		fmt.Println(proxy.Prefix)
+		fmt.Println(proxy.Prefix, proxy.Urls)
 	}
 	// functions.ServerInit()
 }

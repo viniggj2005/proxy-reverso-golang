@@ -9,7 +9,6 @@ import (
 )
 
 func GetConfig() {
-	fmt.Println("entrei na função")
 	dir, err := os.UserConfigDir()
 	if err != nil {
 		fmt.Println("\033[31mErro ao obter diretório de configuração:\033[0m", err)
