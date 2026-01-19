@@ -4,24 +4,39 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"proxy-reverso-golang/global"
 	"proxy-reverso-golang/handlers"
-	"proxy-reverso-golang/structs"
+	loadbalancers "proxy-reverso-golang/load_balancers"
 	"strings"
 )
 
 func MeuHandler(writer http.ResponseWriter, request *http.Request) {
-	redirects := []structs.Redirects{
-		{Prefix: "/api", Url: "http://localhost:50051"},
-	}
+	redirects := global.ProxiesConfig.Proxies
+	fmt.Println("Recebendo Request:", request.URL.String())
+	fmt.Println("Proxies carregados:", len(redirects))
 	for _, redirect := range redirects {
+		fmt.Println("Verificando prefixo:", redirect.Prefix, "para URL:", request.URL.String())
 		if strings.HasPrefix(request.URL.String(), redirect.Prefix) {
+			global.BalancerMutex.Lock()
+			balancer, exists := global.LoadBalancers[redirect.Prefix]
+			if !exists {
+				balancer = loadbalancers.NewRoundRobinBalancer()
+				global.LoadBalancers[redirect.Prefix] = balancer
+			}
+			global.BalancerMutex.Unlock()
 
+			target := balancer.Next(redirect.Servers)
+			if target == nil {
+				render404(writer)
+				return
+			}
+			target.Prefix = redirect.Prefix
 			if request.Header.Get("Upgrade") == "websocket" {
-				handlers.HandleWebSocket(writer, request, redirect)
+				handlers.HandleWebSocket(writer, request, *target)
 			} else if request.Header.Get("Content-Type") == "application/grpc" || request.Header.Get("Content-Type") == "application/grpc+proto" {
-				handlers.HandleGrpc(writer, request, redirect)
+				handlers.HandleGrpc(writer, request, *target)
 			} else {
-				handlers.HandleHttp(writer, request, redirect)
+				handlers.HandleHttp(writer, request, *target)
 			}
 
 			return

@@ -10,11 +10,14 @@ import (
 )
 
 type ConfigStruct struct {
-	ReadTimeoutSeconds       int `json:"readTimeoutSeconds"`
-	WriteTimeoutSeconds      int `json:"writeTimeoutSeconds"`
-	IdleTimeoutSeconds       int `json:"idleTimeoutSeconds"`
-	ReadHeaderTimeoutSeconds int `json:"readHeaderTimeoutSeconds"`
-	MaxHeaderMB              int `json:"maxHeaderMB"`
+	ReadTimeoutSeconds       int    `json:"readTimeoutSeconds"`
+	WriteTimeoutSeconds      int    `json:"writeTimeoutSeconds"`
+	IdleTimeoutSeconds       int    `json:"idleTimeoutSeconds"`
+	ReadHeaderTimeoutSeconds int    `json:"readHeaderTimeoutSeconds"`
+	MaxHeaderMB              int    `json:"maxHeaderMB"`
+	CertFilePath             string `json:"certFilePath"`
+	KeyFilePath              string `json:"keyFilePath"`
+	HttpsOn                  bool   `json:"httpsOn"`
 }
 
 func (config ConfigStruct) HttpServerInit() {
@@ -45,8 +48,10 @@ func (config ConfigStruct) HttpsServerInit() {
 		ReadHeaderTimeout: time.Duration(config.ReadHeaderTimeoutSeconds) * time.Second,
 		MaxHeaderBytes:    config.MaxHeaderMB * 1 << 20,
 	}
-	fmt.Println("\033[32mServer starting on port 443\033[0m")
-	if err := serverTLS.ListenAndServeTLS("cert.pem", "key.pem"); err != nil {
-		fmt.Println("\033[31mError starting server:\033[0m", err)
+	if config.CertFilePath != "" && config.KeyFilePath != "" {
+		fmt.Println("\033[32mServer starting on port 443\033[0m")
+		if err := serverTLS.ListenAndServeTLS(config.CertFilePath, config.KeyFilePath); err != nil {
+			fmt.Println("\033[31mError starting server:\033[0m", err)
+		}
 	}
 }

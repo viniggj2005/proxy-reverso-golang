@@ -1,9 +1,16 @@
 package structs
 
 type ProxyConfigStruct struct {
-	LoadBalancer string   `json:"loadBalancer"`
-	Urls         []string `json:"urls"`
-	Prefix       string   `json:"prefix"`
+	LoadBalancer string               `json:"loadBalancer"`
+	ServerName   string               `json:"serverName"`
+	Servers      []ServerConfigStruct `json:"servers"`
+	Prefix       string               `json:"prefix"`
+}
+
+type ServerConfigStruct struct {
+	Url       string `json:"url"`
+	Weight    int    `json:"weight"`
+	Available bool   `json:"available"`
 }
 
 type AllProxiesConfigStruct struct {

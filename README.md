@@ -1,12 +1,12 @@
 
 ### À FAZER
 - [ ]  Raw TCP (Layer 4 Proxy)
-- [ ]  Carregar rotas e certificados de configuração externa (OS specific)
-- [ ]  Load Balancer (Distribuição de carga)
+- [x]  Load Balancer (Distribuição de carga)
 - [ ]  Health Check (Remover servidores offline do pool)
 
 ### FEITO
 
+- [x]  Carregar rotas e certificados de configuração externa (OS specific)
 - [x] HTTP/1.1
 - [x] WebSockets
 - [x] Server-Sent Events (SSE)

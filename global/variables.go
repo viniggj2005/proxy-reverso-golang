@@ -1,6 +1,7 @@
 package global
 
 import (
+	loadbalancers "proxy-reverso-golang/load_balancers"
 	"proxy-reverso-golang/structs"
 	"sync"
 )
@@ -8,3 +9,6 @@ import (
 var ProxiesConfig structs.AllProxiesConfigStruct
 
 var ProxyMutex sync.RWMutex
+
+var LoadBalancers = make(map[string]*loadbalancers.RoundRobinBalancer)
+var BalancerMutex sync.Mutex

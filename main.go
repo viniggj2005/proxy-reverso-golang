@@ -1,15 +1,16 @@
 package main
 
 import (
-	"fmt"
 	"proxy-reverso-golang/functions"
-	"proxy-reverso-golang/global"
 )
 
 func main() {
+	config, _ := functions.GetMainConfig("main.json", "")
 	functions.GetConfig()
-	for _, proxy := range global.ProxiesConfig.Proxies {
-		fmt.Println(proxy.Prefix, proxy.Urls)
+	go functions.WatchConfigs()
+	if config.HttpsOn {
+		go config.HttpsServerInit()
 	}
-	// functions.ServerInit()
+	config.HttpServerInit()
+	select {}
 }
