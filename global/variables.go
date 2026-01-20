@@ -10,5 +10,5 @@ var ProxiesConfig structs.AllProxiesConfigStruct
 
 var ProxyMutex sync.RWMutex
 
-var LoadBalancers = make(map[string]*loadbalancers.RoundRobinBalancer)
+var LoadBalancers = make(map[string]loadbalancers.LoadBalancer)
 var BalancerMutex sync.Mutex

@@ -21,10 +21,7 @@ func GetConfig() {
 	}
 	for _, entry := range info {
 		if entry.IsDir() {
-			fmt.Println("\033[32mDiretório: \033[0m", entry.Name())
 			getProxiesconfigs(entry.Name(), dir)
-		} else {
-			fmt.Println("\033[32mArquivo: \033[0m", entry.Name())
 		}
 	}
 }
@@ -44,7 +41,6 @@ func GetMainConfig(fileName string, dir string) (ConfigStruct, error) {
 		fmt.Println("\033[31mErro ao ler config:\033[0m", err)
 		return ConfigStruct{}, err
 	}
-	fmt.Printf("\033[32mConfig lida main config:\033[0m %+v\n", config)
 	return config, nil
 }
 
@@ -58,12 +54,18 @@ func getProxiesconfigs(fileName string, dir string) {
 		if err != nil {
 			fmt.Println("\033[31mErro ao ler config:\033[0m", err)
 		}
-		fmt.Printf("\033[32mConfig lida proxies config:\033[0m %+v\n", config)
 		tempProxies = append(tempProxies, config)
 	}
+
 	global.ProxyMutex.Lock()
 	global.ProxiesConfig.Proxies = tempProxies
 	global.ProxyMutex.Unlock()
+
+	global.BalancerMutex.Lock()
+	for _, proxy := range tempProxies {
+		delete(global.LoadBalancers, proxy.Prefix)
+	}
+	global.BalancerMutex.Unlock()
 }
 
 func openFileAndGetContent(filePath string, target interface{}) error {

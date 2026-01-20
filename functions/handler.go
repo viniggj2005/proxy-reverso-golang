@@ -7,25 +7,25 @@ import (
 	"proxy-reverso-golang/global"
 	"proxy-reverso-golang/handlers"
 	loadbalancers "proxy-reverso-golang/load_balancers"
+	"proxy-reverso-golang/structs"
 	"strings"
 )
 
 func MeuHandler(writer http.ResponseWriter, request *http.Request) {
 	redirects := global.ProxiesConfig.Proxies
-	fmt.Println("Recebendo Request:", request.URL.String())
-	fmt.Println("Proxies carregados:", len(redirects))
 	for _, redirect := range redirects {
-		fmt.Println("Verificando prefixo:", redirect.Prefix, "para URL:", request.URL.String())
+		fmt.Println("Prefix: ", redirect.LoadBalancer)
 		if strings.HasPrefix(request.URL.String(), redirect.Prefix) {
 			global.BalancerMutex.Lock()
 			balancer, exists := global.LoadBalancers[redirect.Prefix]
 			if !exists {
-				balancer = loadbalancers.NewRoundRobinBalancer()
+				balancer = getBalancer(redirect.LoadBalancer, redirect.Servers)
 				global.LoadBalancers[redirect.Prefix] = balancer
 			}
 			global.BalancerMutex.Unlock()
 
 			target := balancer.Next(redirect.Servers)
+			fmt.Println("Balancer exists:", target)
 			if target == nil {
 				render404(writer)
 				return
@@ -54,4 +54,15 @@ func render404(writer http.ResponseWriter) {
 	writer.Header().Set("Content-Type", "text/html; charset=utf-8")
 	writer.WriteHeader(http.StatusNotFound)
 	writer.Write(conteudo404)
+}
+
+func getBalancer(balancer string, servers []structs.ServerConfigStruct) loadbalancers.LoadBalancer {
+	switch balancer {
+	case "default", "", "round-robin":
+		return loadbalancers.NewRoundRobinBalancer()
+	case "weighted-round-robin":
+		return loadbalancers.NewWeightedRoundRobinBalancer(servers)
+	default:
+		return loadbalancers.NewRoundRobinBalancer()
+	}
 }
