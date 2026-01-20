@@ -57,9 +57,9 @@ func HandleHttp(writer http.ResponseWriter, request *http.Request, redirect stru
 
 	buffer := make([]byte, 1024)
 	for {
-		n, err := response.Body.Read(buffer)
-		if n > 0 {
-			writer.Write(buffer[:n])
+		readNumber, err := response.Body.Read(buffer)
+		if readNumber > 0 {
+			writer.Write(buffer[:readNumber])
 			flusher.Flush()
 		}
 		if err != nil {

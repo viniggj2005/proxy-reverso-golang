@@ -9,7 +9,7 @@ import (
 )
 
 func WatchConfigs() {
-	dir, err := os.UserConfigDir()
+	directory, err := os.UserConfigDir()
 	if err != nil {
 		fmt.Println("\033[31mErro ao obter diretório de configuração:\033[0m", err)
 		return
@@ -22,7 +22,7 @@ func WatchConfigs() {
 	}
 	defer watcher.Close()
 
-	watcher.Add(fmt.Sprintf("%s/teste-proxy/proxy-config", dir))
+	watcher.Add(fmt.Sprintf("%s/teste-proxy/proxy-config", directory))
 
 	var timer *time.Timer
 

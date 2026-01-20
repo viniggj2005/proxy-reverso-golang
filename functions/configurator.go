@@ -9,34 +9,34 @@ import (
 )
 
 func GetConfig() {
-	dir, err := os.UserConfigDir()
+	directory, err := os.UserConfigDir()
 	if err != nil {
 		fmt.Println("\033[31mErro ao obter diretório de configuração:\033[0m", err)
 		return
 	}
-	info, err := os.ReadDir(fmt.Sprintf("%s/teste-proxy", dir))
+	info, err := os.ReadDir(fmt.Sprintf("%s/teste-proxy", directory))
 	if err != nil {
 		fmt.Println("\033[31mErro ao ler diretório de configuração:\033[0m", err)
 		return
 	}
 	for _, entry := range info {
 		if entry.IsDir() {
-			getProxiesconfigs(entry.Name(), dir)
+			getProxiesconfigs(entry.Name(), directory)
 		}
 	}
 }
 
-func GetMainConfig(fileName string, dir string) (ConfigStruct, error) {
-	if dir == "" {
+func GetMainConfig(fileName string, directory string) (ConfigStruct, error) {
+	if directory == "" {
 		var err error
-		dir, err = os.UserConfigDir()
+		directory, err = os.UserConfigDir()
 		if err != nil {
 			fmt.Println("\033[31mErro ao obter diretório de configuração:\033[0m", err)
 			return ConfigStruct{}, err
 		}
 	}
 	var config ConfigStruct
-	err := openFileAndGetContent(fmt.Sprintf("%s/teste-proxy/%s", dir, fileName), &config)
+	err := openFileAndGetContent(fmt.Sprintf("%s/teste-proxy/%s", directory, fileName), &config)
 	if err != nil {
 		fmt.Println("\033[31mErro ao ler config:\033[0m", err)
 		return ConfigStruct{}, err
@@ -44,13 +44,13 @@ func GetMainConfig(fileName string, dir string) (ConfigStruct, error) {
 	return config, nil
 }
 
-func getProxiesconfigs(fileName string, dir string) {
+func getProxiesconfigs(fileName string, directory string) {
 	var tempProxies []structs.ProxyConfigStruct
-	files, _ := os.ReadDir(fmt.Sprintf("%s/teste-proxy/%s", dir, fileName))
+	files, _ := os.ReadDir(fmt.Sprintf("%s/teste-proxy/%s", directory, fileName))
 	for _, file := range files {
 		var config structs.ProxyConfigStruct
 
-		err := openFileAndGetContent(fmt.Sprintf("%s/teste-proxy/%s/%s", dir, fileName, file.Name()), &config)
+		err := openFileAndGetContent(fmt.Sprintf("%s/teste-proxy/%s/%s", directory, fileName, file.Name()), &config)
 		if err != nil {
 			fmt.Println("\033[31mErro ao ler config:\033[0m", err)
 		}
@@ -72,6 +72,7 @@ func openFileAndGetContent(filePath string, target interface{}) error {
 	content, err := os.ReadFile(filePath)
 	if err != nil {
 		fmt.Println("\033[31mErro ao abrir arquivo:\033[0m", err)
+		return err
 	}
 	return json.Unmarshal(content, target)
 }

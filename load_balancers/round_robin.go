@@ -21,16 +21,16 @@ func NewRoundRobinBalancer() *RoundRobinBalancer {
 	return &RoundRobinBalancer{}
 }
 
-func (r *RoundRobinBalancer) Next(servers []structs.ServerConfigStruct) *structs.Redirects {
+func (receiver *RoundRobinBalancer) Next(servers []structs.ServerConfigStruct) *structs.Redirects {
 	if len(servers) == 0 {
 		return nil
 	}
-	n := atomic.AddUint64(&r.current, 1)
-	for i := 0; i < len(servers); i++ {
-		idx := int((n + uint64(i) - 1) % uint64(len(servers)))
-		if servers[idx].Available {
-			var redirect = structs.Redirects{}
-			redirect.Url = servers[idx].Url
+	number := atomic.AddUint64(&receiver.current, 1)
+	for index := 0; index < len(servers); index++ {
+		serverIndex := int((number + uint64(index) - 1) % uint64(len(servers)))
+		if servers[serverIndex].Available {
+			redirect := structs.Redirects{}
+			redirect.Url = servers[serverIndex].Url
 			return &redirect
 		}
 	}
@@ -47,19 +47,19 @@ func NewWeightedRoundRobinBalancer(servers []structs.ServerConfigStruct) *Weight
 		if weight <= 0 {
 			weight = 1
 		}
-		for i := 0; i < weight; i++ {
+		for index := 0; index < weight; index++ {
 			targets = append(targets, server.Url)
 		}
 	}
 	return &WeightedRoundRobinBalancer{targets: targets}
 }
 
-func (w *WeightedRoundRobinBalancer) Next(servers []structs.ServerConfigStruct) *structs.Redirects {
-	if len(w.targets) == 0 {
+func (receiver *WeightedRoundRobinBalancer) Next(servers []structs.ServerConfigStruct) *structs.Redirects {
+	if len(receiver.targets) == 0 {
 		return nil
 	}
-	n := atomic.AddUint64(&w.current, 1)
+	number := atomic.AddUint64(&receiver.current, 1)
 	var redirect = structs.Redirects{}
-	redirect.Url = w.targets[int((n-1)%uint64(len(w.targets)))]
+	redirect.Url = receiver.targets[int((number-1)%uint64(len(receiver.targets)))]
 	return &redirect
 }
