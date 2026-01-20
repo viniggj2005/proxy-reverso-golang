@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math/rand"
 	"proxy-reverso-golang/structs"
-	"time"
 )
 
 type RandomBalancer struct {
@@ -12,7 +11,6 @@ type RandomBalancer struct {
 }
 
 func NewRandomBalancer() *RandomBalancer {
-	rand.Seed(time.Now().UnixNano())
 	return &RandomBalancer{}
 }
 
