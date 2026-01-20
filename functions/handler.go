@@ -62,6 +62,8 @@ func getBalancer(balancer string, servers []structs.ServerConfigStruct) loadbala
 		return loadbalancers.NewRoundRobinBalancer()
 	case "weighted-round-robin":
 		return loadbalancers.NewWeightedRoundRobinBalancer(servers)
+	case "random":
+		return loadbalancers.NewRandomBalancer()
 	default:
 		return loadbalancers.NewRoundRobinBalancer()
 	}
