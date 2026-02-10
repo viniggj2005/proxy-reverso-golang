@@ -14,7 +14,6 @@ import (
 func MeuHandler(writer http.ResponseWriter, request *http.Request) {
 	redirects := global.ProxiesConfig.Proxies
 	for _, redirect := range redirects {
-		fmt.Println("Prefix: ", redirect.LoadBalancer)
 		if strings.HasPrefix(request.URL.String(), redirect.Prefix) {
 			global.BalancerMutex.Lock()
 			balancer, exists := global.LoadBalancers[redirect.Prefix]
@@ -25,7 +24,6 @@ func MeuHandler(writer http.ResponseWriter, request *http.Request) {
 			global.BalancerMutex.Unlock()
 
 			target := balancer.Next(redirect.Servers)
-			fmt.Println("Balancer exists:", target)
 			if target == nil {
 				render404(writer)
 				return
