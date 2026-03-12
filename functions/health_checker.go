@@ -3,7 +3,7 @@ package functions
 import (
 	"fmt"
 	"net/http"
-	"proxy-reverso-golang/global"
+	"proxy-reverso-golang/providers"
 	"time"
 )
 
@@ -21,10 +21,7 @@ func checkHealth() {
 		Timeout: 2 * time.Second,
 	}
 
-	global.ProxyMutex.Lock()
-	defer global.ProxyMutex.Unlock()
-
-	for proxyIndex, proxy := range global.ProxiesConfig.Proxies {
+	for proxyIndex, proxy := range providers.GetProxies() {
 		for serverIndex, server := range proxy.Servers {
 			available := true
 			response, err := client.Head(server.Url)
@@ -42,11 +39,9 @@ func checkHealth() {
 				}
 				fmt.Printf("\033[33m[HealthCheck]\033[0m Servidor %s agora está %s\n", server.Url, status)
 
-				global.ProxiesConfig.Proxies[proxyIndex].Servers[serverIndex].Available = available
+				providers.SetProxyAvailability(available, proxyIndex, serverIndex)
 
-				global.BalancerMutex.Lock()
-				delete(global.LoadBalancers, proxy.Prefix)
-				global.BalancerMutex.Unlock()
+				providers.DeleteLoadBalancer(proxy.Prefix)
 			}
 		}
 	}
