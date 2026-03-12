@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"proxy-reverso-golang/global"
+	"proxy-reverso-golang/providers"
 	"proxy-reverso-golang/structs"
 )
 
@@ -57,15 +57,12 @@ func getProxiesconfigs(fileName string, directory string) {
 		tempProxies = append(tempProxies, config)
 	}
 
-	global.ProxyMutex.Lock()
-	global.ProxiesConfig.Proxies = tempProxies
-	global.ProxyMutex.Unlock()
+	providers.SetProxies(tempProxies)
 
-	global.BalancerMutex.Lock()
 	for _, proxy := range tempProxies {
-		delete(global.LoadBalancers, proxy.Prefix)
+		providers.DeleteLoadBalancer(proxy.Prefix)
 	}
-	global.BalancerMutex.Unlock()
+
 }
 
 func openFileAndGetContent(filePath string, target interface{}) error {
