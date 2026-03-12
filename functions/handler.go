@@ -4,24 +4,20 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"proxy-reverso-golang/global"
 	"proxy-reverso-golang/handlers"
 	loadbalancers "proxy-reverso-golang/load_balancers"
+	"proxy-reverso-golang/providers"
 	"proxy-reverso-golang/structs"
 	"strings"
 )
 
 func MeuHandler(writer http.ResponseWriter, request *http.Request) {
-	redirects := global.ProxiesConfig.Proxies
+	redirects := providers.GetProxies()
 	for _, redirect := range redirects {
 		if strings.HasPrefix(request.URL.String(), redirect.Prefix) {
-			global.BalancerMutex.Lock()
-			balancer, exists := global.LoadBalancers[redirect.Prefix]
-			if !exists {
-				balancer = getBalancer(redirect.LoadBalancer, redirect.Servers)
-				global.LoadBalancers[redirect.Prefix] = balancer
-			}
-			global.BalancerMutex.Unlock()
+			balancer := providers.GetOrCreateBalancer(redirect.Prefix, func() loadbalancers.LoadBalancer {
+				return getBalancer(redirect.LoadBalancer, redirect.Servers)
+			})
 
 			target := balancer.Next(redirect.Servers)
 			if target == nil {
