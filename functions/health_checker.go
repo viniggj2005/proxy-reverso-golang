@@ -20,7 +20,6 @@ func checkHealth() {
 	client := http.Client{
 		Timeout: 2 * time.Second,
 	}
-
 	for proxyIndex, proxy := range providers.GetProxies() {
 		for serverIndex, server := range proxy.Servers {
 			available := true
