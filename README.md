@@ -1,3 +1,5 @@
+![Proxy-reverso Banner](./banner.jpg)
+
 # Proxy Reverso em Go
 
 Um Load Balancer e Proxy Reverso de alta performance escrito em Go, com suporte a HTTP/2, monitoramento de saúde (Health Check) e recarregamento dinâmico de configurações.

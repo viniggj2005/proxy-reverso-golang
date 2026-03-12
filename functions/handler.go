@@ -1,15 +1,18 @@
 package functions
 
 import (
+	"embed"
 	"fmt"
 	"net/http"
-	"os"
 	"proxy-reverso-golang/handlers"
 	loadbalancers "proxy-reverso-golang/load_balancers"
 	"proxy-reverso-golang/providers"
 	"proxy-reverso-golang/structs"
 	"strings"
 )
+
+//go:embed html/*
+var htmlFiles embed.FS
 
 func MeuHandler(writer http.ResponseWriter, request *http.Request) {
 	redirects := providers.GetProxies()
@@ -40,9 +43,11 @@ func MeuHandler(writer http.ResponseWriter, request *http.Request) {
 }
 
 func render404(writer http.ResponseWriter) {
-	conteudo404, err := os.ReadFile("./html/index.html")
+	conteudo404, err := htmlFiles.ReadFile("html/index.html")
 	if err != nil {
-		fmt.Println("\033[31m Erro ao ler o arquivo 404:\033[0m", err)
+		fmt.Println("\033[31m Erro ao ler o arquivo 404 embutido:\033[0m", err)
+		writer.WriteHeader(http.StatusNotFound)
+		writer.Write([]byte("404 - Not Found"))
 		return
 	}
 	writer.Header().Set("Content-Type", "text/html; charset=utf-8")
