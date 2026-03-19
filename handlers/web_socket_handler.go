@@ -18,6 +18,8 @@ func HandleWebSocket(writer http.ResponseWriter, request *http.Request, redirect
 		fmt.Println("\033[31mErro ao conectar ao servidor:\033[0m", err)
 		return
 	}
+	defer dialConnection.Close()
+	
 	forwardHanshake(request, redirect, dialConnection)
 
 	hijack, ok := writer.(http.Hijacker)
@@ -30,6 +32,8 @@ func HandleWebSocket(writer http.ResponseWriter, request *http.Request, redirect
 		fmt.Println("\033[31mErro ao conectar ao servidor:\033[0m", err)
 		return
 	}
+	defer hijackConnection.Close()
+	
 	tunnel(hijackConnection, dialConnection)
 
 }

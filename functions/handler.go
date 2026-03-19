@@ -21,7 +21,6 @@ func MeuHandler(writer http.ResponseWriter, request *http.Request) {
 			balancer := providers.GetOrCreateBalancer(redirect.Prefix, func() loadbalancers.LoadBalancer {
 				return getBalancer(redirect.LoadBalancer, redirect.Servers)
 			})
-
 			target := balancer.Next(redirect.Servers)
 			if target == nil {
 				render404(writer)
